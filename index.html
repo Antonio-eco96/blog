@@ -32,23 +32,47 @@
             border-bottom: 2px solid #ffcc00;
             padding-bottom: 5px;
         }
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-        ul li {
-            background: #333;
-            margin: 5px 0;
+        textarea {
+            width: 100%;
+            height: 100px;
             padding: 10px;
+            font-size: 16px;
             border-radius: 5px;
         }
-        .banlist {
-            background: #222;
-            padding: 20px;
-            border-radius: 10px;
+        button {
+            display: block;
+            background: #ffcc00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #e6b800;
+        }
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
             margin-top: 20px;
         }
-        .banlist h3 {
+        .card {
+            background: #222;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            text-align: center;
+            width: 200px;
+        }
+        .card img {
+            width: 100%;
+            border-radius: 5px;
+        }
+        .price {
+            font-weight: bold;
             color: #ff6666;
         }
         footer {
@@ -65,56 +89,56 @@
     <header>Nuovo Formato - Magic: The Gathering</header>
 
     <div class="container">
+        <h2>📜 Controlla il tuo Mazzo</h2>
+        <p>Incolla la lista del tuo mazzo (formati Manabox, Scryfall, Moxfield) e premi il pulsante per vedere le carte.</p>
         
-        <h2>📜 Regole Generali</h2>
-        <ul>
-            <li>Ogni mazzo deve contenere <strong>60 carte</strong>.</li>
-            <li>59 carte devono essere singole copie (eccetto terre base).</li>
-            <li>1 carta è il <strong>Comandante</strong>, che può essere una creatura leggendaria o un planeswalker.</li>
-            <li>Il comandante può essere lanciato dalla zona di comando.</li>
-            <li>Se il comandante viene rimosso, può essere riportato nella zona di comando con un costo aggiuntivo di {2} per ogni volta che è stato lanciato.</li>
-        </ul>
+        <textarea id="decklist" placeholder="Esempio:&#10;1 Black Lotus&#10;4 Lightning Bolt"></textarea>
+        <button onclick="fetchCards()">🔍 Analizza Mazzo</button>
 
-        <h2>⚔️ Regole di Gioco</h2>
-        <ul>
-            <li>Punti vita iniziali: <strong>25 (1v1) o 30 (Multiplayer)</strong>.</li>
-            <li>Il formato segue tutte le regole ufficiali di Magic, salvo quanto specificato in questo regolamento.</li>
-        </ul>
-
-        <h2>🚫 Carte Vietate</h2>
-        <div class="banlist">
-            <h3>Fast Mana</h3>
-            <ul>
-                <li>Black Lotus</li>
-                <li>Mox Pearl, Mox Sapphire, Mox Jet, Mox Ruby, Mox Emerald</li>
-                <li>Sol Ring, Mana Crypt, Mana Vault, Grim Monolith</li>
-                <li>Jeweled Lotus, Chrome Mox, Mox Diamond</li>
-                <li>Lotus Petal, Lion’s Eye Diamond</li>
-                <li>Ancient Tomb, City of Traitors</li>
-                <li>Dark Ritual, Cabal Ritual, Seething Song</li>
-            </ul>
-
-            <h3>Tutori</h3>
-            <ul>
-                <li>Demonic Tutor, Vampiric Tutor, Imperial Seal</li>
-                <li>Mystical Tutor, Worldly Tutor, Enlightened Tutor</li>
-                <li>Gamble, Fabricate, Eladamri’s Call</li>
-                <li>Chord of Calling, Green Sun’s Zenith</li>
-            </ul>
-        </div>
-
-        <h2>🎯 Obiettivi del Formato</h2>
-        <ul>
-            <li>✅ Promuovere varietà e diversità nei mazzi.</li>
-            <li>✅ Limitare strategie ripetitive e combo troppo veloci.</li>
-            <li>✅ Dare maggiore enfasi alla strategia e alla costruzione del mazzo.</li>
-        </ul>
-
+        <div class="card-container" id="card-container"></div>
     </div>
 
     <footer>
         Buon divertimento e che la magia sia con voi! ✨
     </footer>
+
+    <script>
+        async function fetchCards() {
+            const decklist = document.getElementById("decklist").value;
+            const lines = decklist.split("\n");
+            const cardContainer = document.getElementById("card-container");
+            cardContainer.innerHTML = ""; // Pulisce l'area prima di aggiungere nuove carte
+
+            for (let line of lines) {
+                if (!line.trim()) continue; // Salta righe vuote
+
+                // Rimuove quantità (es. "4 Lightning Bolt" -> "Lightning Bolt")
+                let cardName = line.replace(/^\d+\s*/, "").trim();
+
+                try {
+                    const response = await fetch(`https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(cardName)}`);
+                    if (!response.ok) throw new Error(`Carta non trovata: ${cardName}`);
+                    
+                    const cardData = await response.json();
+                    const imageUrl = cardData.image_uris?.normal || cardData.card_faces?.[0]?.image_uris?.normal || "";
+                    const price = cardData.prices?.eur || "N/A"; // Prezzo in Euro
+
+                    // Creazione del riquadro carta
+                    const cardDiv = document.createElement("div");
+                    cardDiv.classList.add("card");
+                    cardDiv.innerHTML = `
+                        <img src="${imageUrl}" alt="${cardName}">
+                        <p><strong>${cardName}</strong></p>
+                        <p class="price">💰 Prezzo: €${price}</p>
+                    `;
+                    cardContainer.appendChild(cardDiv);
+
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+        }
+    </script>
 
 </body>
 </html>

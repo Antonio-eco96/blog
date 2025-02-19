@@ -49,13 +49,14 @@
         }
         .charts {
             display: flex;
-            justify-content: space-around;
+            justify-content: space-evenly;
             flex-wrap: wrap;
             margin-top: 20px;
+            gap: 30px;
         }
         canvas {
-            max-width: 300px;
-            max-height: 300px;
+            max-width: 350px;
+            max-height: 350px;
         }
         .card-list {
             display: flex;
@@ -181,9 +182,9 @@
             }
 
             // Generazione grafici
-            generateChart("colorChart", "Distribuzione Colori", colorData, ["white", "blue", "black", "red", "green", "gray"]);
-            generateChart("typeChart", "Tipologie di Carte", typeData, ["red", "blue", "green", "gray", "purple", "orange", "brown"]);
-            generateChart("manaChart", "Curve di Mana", manaData, ["gold", "silver", "brown", "blue", "red", "black"]);
+            generateChart("colorChart", "Distribuzione Colori", colorData, ["#ffffff", "#007bff", "#212529", "#dc3545", "#28a745", "#6c757d"]);
+            generateChart("typeChart", "Tipologie di Carte", typeData, ["#dc3545", "#007bff", "#28a745", "#6c757d", "#17a2b8", "#ffc107", "#17a2b8"]);
+            generateChart("manaChart", "Curve di Mana", manaData, ["#e6b800", "#ffcc00", "#d9534f", "#5bc0de", "#28a745", "#17a2b8"]);
         }
 
         function generateChart(canvasId, title, data, colors) {
@@ -194,7 +195,8 @@
                     labels: Object.keys(data),
                     datasets: [{
                         data: Object.values(data),
-                        backgroundColor: colors
+                        backgroundColor: colors,
+                        borderWidth: 1,
                     }]
                 },
                 options: {
@@ -209,11 +211,20 @@
                             }
                         },
                         legend: {
+                            position: 'bottom',
                             labels: {
-                                color: "#ffffff"
+                                color: "#ffffff",
+                                font: {
+                                    size: 12
+                                }
                             }
+                        },
+                        tooltip: {
+                            bodyColor: "#000",
+                            backgroundColor: "#ffcc00",
                         }
-                    }
+                    },
+                    cutoutPercentage: 70,  // Rende il grafico più minimal
                 }
             });
         }

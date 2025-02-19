@@ -57,6 +57,28 @@
             max-width: 300px;
             max-height: 300px;
         }
+        .card-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .card {
+            background: #333;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            width: 180px;
+        }
+        .card img {
+            width: 100%;
+            border-radius: 5px;
+        }
+        .card p {
+            margin: 5px 0;
+            color: #ffcc00;
+        }
         footer {
             background: #8b0000;
             padding: 10px;
@@ -74,11 +96,15 @@
         <textarea id="decklist" placeholder="1 Black Lotus&#10;4 Lightning Bolt"></textarea>
         <button onclick="analyzeDeck()">🔍 Analizza</button>
 
+        <h2>📊 Analisi Grafica</h2>
         <div class="charts">
             <canvas id="colorChart"></canvas>
             <canvas id="typeChart"></canvas>
             <canvas id="manaChart"></canvas>
         </div>
+
+        <h2>🃏 Lista Carte</h2>
+        <div id="cardContainer" class="card-list"></div>
     </div>
 
     <footer>
@@ -89,12 +115,15 @@
         async function analyzeDeck() {
             const decklist = document.getElementById("decklist").value;
             const lines = decklist.split("\n").filter(line => line.trim() !== "");
-
+            const cardContainer = document.getElementById("cardContainer");
+            cardContainer.innerHTML = ""; // Pulizia precedente
+            
             let colorData = { White: 0, Blue: 0, Black: 0, Red: 0, Green: 0, Colorless: 0 };
             let typeData = { Creature: 0, Instant: 0, Sorcery: 0, Artifact: 0, Enchantment: 0, Planeswalker: 0, Land: 0 };
             let manaData = { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5+": 0 };
 
             for (let line of lines) {
+                let quantity = parseInt(line.match(/^\d+/)?.[0]) || 1;
                 let cardName = line.replace(/^\d+\s*/, "").trim();
                 if (!cardName) continue;
 
@@ -103,34 +132,47 @@
                     if (!response.ok) throw new Error(`Carta non trovata: ${cardName}`);
                     const cardData = await response.json();
 
-                    // Controllo i colori della carta
+                    // Aggiunta dell'immagine e del prezzo nella lista
+                    let imageUrl = cardData.image_uris?.normal || cardData.card_faces?.[0]?.image_uris?.normal || "";
+                    let price = cardData.prices?.eur ? `${cardData.prices.eur}€` : "N/D";
+
+                    const cardElement = document.createElement("div");
+                    cardElement.classList.add("card");
+                    cardElement.innerHTML = `
+                        <img src="${imageUrl}" alt="${cardData.name}">
+                        <p><strong>${cardData.name}</strong></p>
+                        <p>Prezzo: ${price}</p>
+                    `;
+                    cardContainer.appendChild(cardElement);
+
+                    // Colore della carta
                     if (cardData.colors) {
                         cardData.colors.forEach(color => {
-                            if (color === "W") colorData.White++;
-                            if (color === "U") colorData.Blue++;
-                            if (color === "B") colorData.Black++;
-                            if (color === "R") colorData.Red++;
-                            if (color === "G") colorData.Green++;
+                            if (color === "W") colorData.White += quantity;
+                            if (color === "U") colorData.Blue += quantity;
+                            if (color === "B") colorData.Black += quantity;
+                            if (color === "R") colorData.Red += quantity;
+                            if (color === "G") colorData.Green += quantity;
                         });
                     } else {
-                        colorData.Colorless++;
+                        colorData.Colorless += quantity;
                     }
 
                     // Tipo della carta
-                    if (cardData.type_line.includes("Creature")) typeData.Creature++;
-                    if (cardData.type_line.includes("Instant")) typeData.Instant++;
-                    if (cardData.type_line.includes("Sorcery")) typeData.Sorcery++;
-                    if (cardData.type_line.includes("Artifact")) typeData.Artifact++;
-                    if (cardData.type_line.includes("Enchantment")) typeData.Enchantment++;
-                    if (cardData.type_line.includes("Planeswalker")) typeData.Planeswalker++;
-                    if (cardData.type_line.includes("Land")) typeData.Land++;
+                    if (cardData.type_line.includes("Creature")) typeData.Creature += quantity;
+                    if (cardData.type_line.includes("Instant")) typeData.Instant += quantity;
+                    if (cardData.type_line.includes("Sorcery")) typeData.Sorcery += quantity;
+                    if (cardData.type_line.includes("Artifact")) typeData.Artifact += quantity;
+                    if (cardData.type_line.includes("Enchantment")) typeData.Enchantment += quantity;
+                    if (cardData.type_line.includes("Planeswalker")) typeData.Planeswalker += quantity;
+                    if (cardData.type_line.includes("Land")) typeData.Land += quantity;
 
                     // Costo di mana
                     let cmc = Math.floor(cardData.cmc || 0);
                     if (cmc >= 5) {
-                        manaData["5+"]++;
+                        manaData["5+"] += quantity;
                     } else {
-                        manaData[cmc]++;
+                        manaData[cmc] += quantity;
                     }
 
                 } catch (error) {
@@ -138,7 +180,7 @@
                 }
             }
 
-            // Genera i grafici
+            // Generazione grafici
             generateChart("colorChart", "Distribuzione Colori", colorData, ["white", "blue", "black", "red", "green", "gray"]);
             generateChart("typeChart", "Tipologie di Carte", typeData, ["red", "blue", "green", "gray", "purple", "orange", "brown"]);
             generateChart("manaChart", "Curve di Mana", manaData, ["gold", "silver", "brown", "blue", "red", "black"]);

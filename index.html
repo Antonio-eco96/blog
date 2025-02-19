@@ -3,29 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagina Semplice</title>
+    <title>Nuovo Formato - Magic: The Gathering</title>
     <style>
         body {
-            font-family: Calibri, sans-serif;
-            text-align: center;
-            margin-top: 50px;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            line-height: 1.6;
         }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
+        header {
+            background: #8b0000;
+            padding: 20px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            padding: 20px;
+        }
+        h2 {
+            color: #ffcc00;
+            border-bottom: 2px solid #ffcc00;
+            padding-bottom: 5px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        ul li {
+            background: #333;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .banlist {
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .banlist h3 {
+            color: #ff6666;
+        }
+        footer {
+            background: #8b0000;
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <h1>Benvenuto nella mia pagina!</h1>
-    <p>Questa è una semplice pagina HTML con uno script interattivo.</p>
-    <button onclick="mostraMessaggio()">Clicca qui</button>
 
-    <script>
-        function mostraMessaggio() {
-            alert("Ciao! Grazie per aver cliccato.");
-        }
-    </script>
+    <header>Nuovo Formato - Magic: The Gathering</header>
+
+    <div class="container">
+        
+        <h2>📜 Regole Generali</h2>
+        <ul>
+            <li>Ogni mazzo deve contenere <strong>60 carte</strong>.</li>
+            <li>59 carte devono essere singole copie (eccetto terre base).</li>
+            <li>1 carta è il <strong>Comandante</strong>, che può essere una creatura leggendaria o un planeswalker.</li>
+            <li>Il comandante può essere lanciato dalla zona di comando.</li>
+            <li>Se il comandante viene rimosso, può essere riportato nella zona di comando con un costo aggiuntivo di {2} per ogni volta che è stato lanciato.</li>
+        </ul>
+
+        <h2>⚔️ Regole di Gioco</h2>
+        <ul>
+            <li>Punti vita iniziali: <strong>25 (1v1) o 30 (Multiplayer)</strong>.</li>
+            <li>Il formato segue tutte le regole ufficiali di Magic, salvo quanto specificato in questo regolamento.</li>
+        </ul>
+
+        <h2>🚫 Carte Vietate</h2>
+        <div class="banlist">
+            <h3>Fast Mana</h3>
+            <ul>
+                <li>Black Lotus</li>
+                <li>Mox Pearl, Mox Sapphire, Mox Jet, Mox Ruby, Mox Emerald</li>
+                <li>Sol Ring, Mana Crypt, Mana Vault, Grim Monolith</li>
+                <li>Jeweled Lotus, Chrome Mox, Mox Diamond</li>
+                <li>Lotus Petal, Lion’s Eye Diamond</li>
+                <li>Ancient Tomb, City of Traitors</li>
+                <li>Dark Ritual, Cabal Ritual, Seething Song</li>
+            </ul>
+
+            <h3>Tutori</h3>
+            <ul>
+                <li>Demonic Tutor, Vampiric Tutor, Imperial Seal</li>
+                <li>Mystical Tutor, Worldly Tutor, Enlightened Tutor</li>
+                <li>Gamble, Fabricate, Eladamri’s Call</li>
+                <li>Chord of Calling, Green Sun’s Zenith</li>
+            </ul>
+        </div>
+
+        <h2>🎯 Obiettivi del Formato</h2>
+        <ul>
+            <li>✅ Promuovere varietà e diversità nei mazzi.</li>
+            <li>✅ Limitare strategie ripetitive e combo troppo veloci.</li>
+            <li>✅ Dare maggiore enfasi alla strategia e alla costruzione del mazzo.</li>
+        </ul>
+
+    </div>
+
+    <footer>
+        Buon divertimento e che la magia sia con voi! ✨
+    </footer>
+
 </body>
 </html>

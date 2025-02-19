@@ -86,9 +86,9 @@
     </footer>
 
     <script>
-        function analyzeDeck() {
+        async function analyzeDeck() {
             const decklist = document.getElementById("decklist").value;
-            const lines = decklist.split("\n");
+            const lines = decklist.split("\n").filter(line => line.trim() !== "");
 
             let colorData = { White: 0, Blue: 0, Black: 0, Red: 0, Green: 0, Colorless: 0 };
             let typeData = { Creature: 0, Instant: 0, Sorcery: 0, Artifact: 0, Enchantment: 0, Planeswalker: 0, Land: 0 };
@@ -98,15 +98,82 @@
                 let cardName = line.replace(/^\d+\s*/, "").trim();
                 if (!cardName) continue;
 
-                // Simuliamo dati casuali (da API Scryfall si possono ottenere dettagli reali)
-                colorData["Red"] += Math.random() < 0.5 ? 1 : 0;
-                typeData["Creature"] += Math.random() < 0.5 ? 1 : 0;
-                manaData[Math.floor(Math.random() * 6)] += 1;
+                try {
+                    const response = await fetch(`https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(cardName)}`);
+                    if (!response.ok) throw new Error(`Carta non trovata: ${cardName}`);
+                    const cardData = await response.json();
+
+                    // Controllo i colori della carta
+                    if (cardData.colors) {
+                        cardData.colors.forEach(color => {
+                            if (color === "W") colorData.White++;
+                            if (color === "U") colorData.Blue++;
+                            if (color === "B") colorData.Black++;
+                            if (color === "R") colorData.Red++;
+                            if (color === "G") colorData.Green++;
+                        });
+                    } else {
+                        colorData.Colorless++;
+                    }
+
+                    // Tipo della carta
+                    if (cardData.type_line.includes("Creature")) typeData.Creature++;
+                    if (cardData.type_line.includes("Instant")) typeData.Instant++;
+                    if (cardData.type_line.includes("Sorcery")) typeData.Sorcery++;
+                    if (cardData.type_line.includes("Artifact")) typeData.Artifact++;
+                    if (cardData.type_line.includes("Enchantment")) typeData.Enchantment++;
+                    if (cardData.type_line.includes("Planeswalker")) typeData.Planeswalker++;
+                    if (cardData.type_line.includes("Land")) typeData.Land++;
+
+                    // Costo di mana
+                    let cmc = Math.floor(cardData.cmc || 0);
+                    if (cmc >= 5) {
+                        manaData["5+"]++;
+                    } else {
+                        manaData[cmc]++;
+                    }
+
+                } catch (error) {
+                    console.error(error);
+                }
             }
 
-            new Chart(document.getElementById("colorChart"), { type: "pie", data: { labels: Object.keys(colorData), datasets: [{ data: Object.values(colorData), backgroundColor: ["white", "blue", "black", "red", "green", "gray"] }] } });
-            new Chart(document.getElementById("typeChart"), { type: "pie", data: { labels: Object.keys(typeData), datasets: [{ data: Object.values(typeData), backgroundColor: ["red", "blue", "green", "gray", "purple", "orange", "brown"] }] } });
-            new Chart(document.getElementById("manaChart"), { type: "pie", data: { labels: Object.keys(manaData), datasets: [{ data: Object.values(manaData), backgroundColor: ["gold", "silver", "brown", "blue", "red", "black"] }] } });
+            // Genera i grafici
+            generateChart("colorChart", "Distribuzione Colori", colorData, ["white", "blue", "black", "red", "green", "gray"]);
+            generateChart("typeChart", "Tipologie di Carte", typeData, ["red", "blue", "green", "gray", "purple", "orange", "brown"]);
+            generateChart("manaChart", "Curve di Mana", manaData, ["gold", "silver", "brown", "blue", "red", "black"]);
+        }
+
+        function generateChart(canvasId, title, data, colors) {
+            let ctx = document.getElementById(canvasId).getContext("2d");
+            new Chart(ctx, {
+                type: "pie",
+                data: {
+                    labels: Object.keys(data),
+                    datasets: [{
+                        data: Object.values(data),
+                        backgroundColor: colors
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: title,
+                            color: "#ffffff",
+                            font: {
+                                size: 18
+                            }
+                        },
+                        legend: {
+                            labels: {
+                                color: "#ffffff"
+                            }
+                        }
+                    }
+                }
+            });
         }
     </script>
 

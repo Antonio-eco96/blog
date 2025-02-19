@@ -64,6 +64,16 @@
             justify-content: center;
             margin-top: 20px;
         }
+        .card-section {
+            margin-bottom: 40px;
+            padding: 15px;
+            border-top: 2px solid #ffcc00;
+        }
+        .card-section h3 {
+            text-transform: uppercase;
+            color: #ffcc00;
+            margin-bottom: 10px;
+        }
         .card {
             background: #333;
             margin: 10px;
@@ -86,6 +96,11 @@
             margin-top: 20px;
             font-size: 14px;
         }
+        .total-count, .total-price {
+            margin-top: 20px;
+            color: #ffcc00;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
@@ -106,6 +121,9 @@
 
         <h2>🃏 Lista Carte</h2>
         <div id="cardContainer" class="card-list"></div>
+
+        <div class="total-count" id="totalCount">Totale Carte: 0</div>
+        <div class="total-price" id="totalPrice">Totale Prezzo: 0€</div>
     </div>
 
     <footer>
@@ -123,6 +141,20 @@
             let typeData = { Creature: 0, Instant: 0, Sorcery: 0, Artifact: 0, Enchantment: 0, Planeswalker: 0, Land: 0 };
             let manaData = { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5+": 0 };
 
+            let totalCards = 0;
+            let totalPrice = 0;
+
+            // Struttura per contenere le carte per tipo
+            const cardsByType = {
+                Creature: [],
+                Instant: [],
+                Sorcery: [],
+                Artifact: [],
+                Enchantment: [],
+                Planeswalker: [],
+                Land: []
+            };
+
             for (let line of lines) {
                 let quantity = parseInt(line.match(/^\d+/)?.[0]) || 1;
                 let cardName = line.replace(/^\d+\s*/, "").trim();
@@ -135,16 +167,19 @@
 
                     // Aggiunta dell'immagine e del prezzo nella lista
                     let imageUrl = cardData.image_uris?.normal || cardData.card_faces?.[0]?.image_uris?.normal || "";
-                    let price = cardData.prices?.eur ? `${cardData.prices.eur}€` : "N/D";
+                    let price = cardData.prices?.eur ? parseFloat(cardData.prices.eur) : 0;
 
-                    const cardElement = document.createElement("div");
-                    cardElement.classList.add("card");
-                    cardElement.innerHTML = `
-                        <img src="${imageUrl}" alt="${cardData.name}">
-                        <p><strong>${cardData.name}</strong></p>
-                        <p>Prezzo: ${price}</p>
-                    `;
-                    cardContainer.appendChild(cardElement);
+                    totalCards += quantity;
+                    totalPrice += price * quantity;
+
+                    // Aggiunta alla sezione per tipo
+                    if (cardData.type_line.includes("Creature")) cardsByType.Creature.push({ cardData, quantity, imageUrl, price });
+                    if (cardData.type_line.includes("Instant")) cardsByType.Instant.push({ cardData, quantity, imageUrl, price });
+                    if (cardData.type_line.includes("Sorcery")) cardsByType.Sorcery.push({ cardData, quantity, imageUrl, price });
+                    if (cardData.type_line.includes("Artifact")) cardsByType.Artifact.push({ cardData, quantity, imageUrl, price });
+                    if (cardData.type_line.includes("Enchantment")) cardsByType.Enchantment.push({ cardData, quantity, imageUrl, price });
+                    if (cardData.type_line.includes("Planeswalker")) cardsByType.Planeswalker.push({ cardData, quantity, imageUrl, price });
+                    if (cardData.type_line.includes("Land")) cardsByType.Land.push({ cardData, quantity, imageUrl, price });
 
                     // Colore della carta
                     if (cardData.colors) {
@@ -181,54 +216,11 @@
                 }
             }
 
+            // Aggiorno il contatore delle carte e il prezzo
+            document.getElementById("totalCount").innerText = `Totale Carte: ${totalCards}`;
+            document.getElementById("totalPrice").innerText = `Totale Prezzo: ${totalPrice.toFixed(2)}€`;
+
             // Generazione grafici
             generateChart("colorChart", "Distribuzione Colori", colorData, ["#ffffff", "#007bff", "#212529", "#dc3545", "#28a745", "#6c757d"]);
             generateChart("typeChart", "Tipologie di Carte", typeData, ["#dc3545", "#007bff", "#28a745", "#6c757d", "#17a2b8", "#ffc107", "#17a2b8"]);
-            generateChart("manaChart", "Curve di Mana", manaData, ["#e6b800", "#ffcc00", "#d9534f", "#5bc0de", "#28a745", "#17a2b8"]);
-        }
-
-        function generateChart(canvasId, title, data, colors) {
-            let ctx = document.getElementById(canvasId).getContext("2d");
-            new Chart(ctx, {
-                type: "pie",
-                data: {
-                    labels: Object.keys(data),
-                    datasets: [{
-                        data: Object.values(data),
-                        backgroundColor: colors,
-                        borderWidth: 1,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: title,
-                            color: "#ffffff",
-                            font: {
-                                size: 18
-                            }
-                        },
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: "#ffffff",
-                                font: {
-                                    size: 12
-                                }
-                            }
-                        },
-                        tooltip: {
-                            bodyColor: "#000",
-                            backgroundColor: "#ffcc00",
-                        }
-                    },
-                    cutoutPercentage: 70,  // Rende il grafico più minimal
-                }
-            });
-        }
-    </script>
-
-</body>
-</html>
+            generateChart("manaChart", "Curve di Mana", manaData, ["#e6b800", "#ffcc00", "#d9534f", "#5bc0de", "#28a745

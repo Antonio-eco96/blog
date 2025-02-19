@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regole del Formato - Magic: The Gathering</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        header {
+            background: #8b0000;
+            padding: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            text-align: left;
+        }
+        h2 {
+            color: #ffcc00;
+            border-bottom: 2px solid #ffcc00;
+            padding-bottom: 5px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        ul li {
+            background: #333;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        button {
+            display: inline-block;
+            background: #ffcc00;
+            color: #000;
+            padding: 10px 20px;
+            margin-top: 20px;
+            text-decoration: none;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+        }
+        button:hover {
+            background: #e6b800;
+        }
+        footer {
+            background: #8b0000;
+            padding: 10px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>Regole del Formato</header>
+
+    <div class="container">
+        <h2>📜 Regole Generali</h2>
+        <ul>
+            <li>Ogni mazzo deve contenere <strong>60 carte</strong>.</li>
+            <li>59 carte singole (eccetto terre base).</li>
+            <li>1 carta è il <strong>Comandante</strong> (creatura leggendaria o planeswalker).</li>
+            <li>Il comandante può essere lanciato dalla zona di comando.</li>
+            <li>Se rimosso, può essere rigiocato con un costo aggiuntivo di {2} per ogni volta.</li>
+        </ul>
+
+        <h2>🚫 Carte Bannate</h2>
+        <ul>
+            <li>Sol Ring, Black Lotus, Mox Opal, Mana Crypt...</li>
+            <li>Demonic Tutor, Vampiric Tutor, Mystical Tutor...</li>
+        </ul>
+
+        <h2>⚔️ Punti Vita</h2>
+        <ul>
+            <li>25 punti vita (1v1) | 30 punti vita (Multiplayer).</li>
+        </ul>
+
+        <a href="analisi.html">
+            <button>🔍 Analizza il tuo Mazzo</button>
+        </a>
+    </div>
+
+    <footer>
+        Buon divertimento e che la magia sia con voi! ✨
+    </footer>
+
+</body>
+</html>
